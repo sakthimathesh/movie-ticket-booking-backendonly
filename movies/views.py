@@ -735,3 +735,59 @@ def cancel_booking(request, booking_id):
         return JsonResponse({
             "message": "Unable to cancel booking"
         }, status=500)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@csrf_exempt
+def import_movies(request):
+
+    if request.method != "POST":
+        return JsonResponse(
+            {"message": "Only POST method allowed"},
+            status=405
+        )
+
+    try:
+        data = json.loads(request.body)
+
+        for item in data:
+            Movies.objects.update_or_create(
+                id=item["id"],
+                defaults={
+                    "name": item["name"],
+                    "image": item["image"],
+                    "rating": item["rating"],
+                    "language": item["language"],
+                    "duration": item["duration"],
+                    "genre": item["genre"],
+                }
+            )
+
+        return JsonResponse({
+            "message": "Movies imported successfully",
+            "count": len(data)
+        })
+
+    except Exception as error:
+        return JsonResponse({
+            "message": "Import failed",
+            "error": str(error)
+        }, status=500)

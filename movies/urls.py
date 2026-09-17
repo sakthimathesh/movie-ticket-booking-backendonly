@@ -15,6 +15,8 @@ urlpatterns = [
     path("<int:id>/seats/", views.seat_list, name="seat_list"),
     path("<int:id>/", views.movie_detail, name='movie_detail'),
 
+    path("import-movies/", views.import_movies, name="import_movies"),
+
     path("test-email/", views.test_email, name="test_email"),
     path("register/send-otp/", views.send_otp, name="send_otp"),
    path("register/verify-otp/", views.verify_otp, name="verify_otp"),
