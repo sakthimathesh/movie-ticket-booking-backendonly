@@ -743,19 +743,6 @@ def cancel_booking(request, booking_id):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 @csrf_exempt
 def import_movies(request):
 
@@ -767,11 +754,19 @@ def import_movies(request):
 
     try:
         data = json.loads(request.body)
+        count = 0
 
         for item in data:
-            Movies.objects.update_or_create(
-                id=item["id"],
-                defaults={
+
+            # Django dumpdata format
+            if "pk" in item and "fields" in item:
+                movie_id = item["pk"]
+                movie_fields = item["fields"]
+
+            # Normal JSON format
+            else:
+                movie_id = item["id"]
+                movie_fields = {
                     "name": item["name"],
                     "image": item["image"],
                     "rating": item["rating"],
@@ -779,11 +774,17 @@ def import_movies(request):
                     "duration": item["duration"],
                     "genre": item["genre"],
                 }
+
+            Movies.objects.update_or_create(
+                id=movie_id,
+                defaults=movie_fields
             )
+
+            count += 1
 
         return JsonResponse({
             "message": "Movies imported successfully",
-            "count": len(data)
+            "count": count
         })
 
     except Exception as error:
